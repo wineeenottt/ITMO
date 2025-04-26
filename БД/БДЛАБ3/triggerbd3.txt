@@ -1,0 +1,95 @@
+
+psql -h pg -d studs
+
+CREATE OR REPLACE FUNCTION update_emotion_on_temp()
+RETURNS TRIGGER AS $$
+BEGIN
+
+IF NEW.temperature < -50 THEN
+UPDATE emotion
+SET type_emotion = 'Депрессия', intensity = 10
+FROM interaction i
+        JOIN transformation t ON i.creation_id = t.creation_id
+        WHERE t.environment_id = NEW.environment_id
+        AND emotion.person_id = i.person_id;
+        
+ELSIF NEW.temperature > -50 AND NEW.temperature <= -10 THEN
+UPDATE emotion
+SET type_emotion = 'Уныние', intensity = 8
+FROM interaction i
+        JOIN transformation t ON i.creation_id = t.creation_id
+        WHERE t.environment_id = NEW.environment_id
+        AND emotion.person_id = i.person_id;
+
+ELSIF NEW.temperature > -10 AND NEW.temperature <= 0 THEN
+UPDATE emotion
+SET type_emotion = 'Тоска', intensity = 6
+FROM interaction i
+        JOIN transformation t ON i.creation_id = t.creation_id
+        WHERE t.environment_id = NEW.environment_id
+        AND emotion.person_id = i.person_id;
+        
+ELSIF NEW.temperature > 0 AND NEW.temperature <= 10.5 THEN
+UPDATE emotion
+SET type_emotion = 'Скука', intensity = 6
+FROM interaction i
+        JOIN transformation t ON i.creation_id = t.creation_id
+        WHERE t.environment_id = NEW.environment_id
+        AND emotion.person_id = i.person_id;
+
+ELSIF NEW.temperature > 10.5 AND NEW.temperature <= 25 THEN
+UPDATE emotion
+SET type_emotion = 'Восторг', intensity = 8
+FROM interaction i
+        JOIN transformation t ON i.creation_id = t.creation_id
+        WHERE t.environment_id = NEW.environment_id
+        AND emotion.person_id = i.person_id;
+        
+ELSIF NEW.temperature > 25 AND NEW.temperature <= 35 THEN
+UPDATE emotion
+SET type_emotion = 'Эйфория', intensity = 10
+FROM interaction i
+        JOIN transformation t ON i.creation_id = t.creation_id
+        WHERE t.environment_id = NEW.environment_id
+        AND emotion.person_id = i.person_id;
+        
+ELSIF NEW.temperature > 35 AND NEW.temperature <= 50 THEN
+UPDATE emotion
+SET type_emotion = 'Раздражительность', intensity = 9
+FROM interaction i
+        JOIN transformation t ON i.creation_id = t.creation_id
+        WHERE t.environment_id = NEW.environment_id
+        AND emotion.person_id = i.person_id;
+
+ELSIF NEW.temperature > 50 THEN
+UPDATE emotion
+SET type_emotion = 'Беспокойство', intensity = 10
+FROM interaction i
+        JOIN transformation t ON i.creation_id = t.creation_id
+        WHERE t.environment_id = NEW.environment_id
+        AND emotion.person_id = i.person_id;
+
+END IF;
+RETURN NEW;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_change_emotion_temp
+AFTER UPDATE OF temperature ON Environment
+FOR EACH ROW
+EXECUTE FUNCTION update_emotion_on_temp();
+
+DROP FUNCTION update_emotion_on_temp();
+DROP TRIGGER trigger_change_emotion_temp ON Environment;
+
+
+INSERT INTO conditionenvironment (temperature, humidity)
+VALUES (20, 10);
+
+INSERT INTO emotion(type_emotion, intensity, person_id) VALUES
+    ('Усталость', 5, 4);
+    
+UPDATE environment
+SET temperature = 20
+WHERE environment_id = 1;
