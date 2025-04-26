@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<timetable_1_semester>
+    <id>466310</id>
+    <schedule>
+        <element>
+            <day>Вторник</day>
+            <every_week>True</every_week>
+            <subjects>
+                <element>
+                    <number>1</number>
+                    <time>10:00-11:30</time>
+                    <room>ауд. 2414</room>
+                    <lesson>Математический анализ(прак)</lesson>
+                    <teacher>Юрова Татьяна Сергеевна</teacher>
+                    <location>Кронверкский пр., д.49, лит.А</location>
+                </element>
+                <element>
+                    <number>2</number>
+                    <time>11:40-13:10</time>
+                    <room>ауд. 1316</room>
+                    <lesson>Линейная алгебра(прак)</lesson>
+                    <teacher>Ефремов Илья Дмитриевич</teacher>
+                    <location>Кронверкский пр., д.49, лит.А</location>
+                </element>
+                <element>
+                    <number>3</number>
+                    <time>15:20-16:50</time>
+                    <room>ауд. 3202</room>
+                    <lesson>Английский язык А1(прак)</lesson>
+                    <teacher>Зельницкая Екатерина Юрьевна</teacher>
+                    <location>ул.Ломоносова, д.9, лит. А</location>
+                </element>
+                <element>
+                    <number>4</number>
+                    <time>17:00-18:30</time>
+                    <room>ауд. 3202</room>
+                    <lesson>Английский язык А1(прак)</lesson>
+                    <teacher>Зельницкая Екатерина Юрьевна</teacher>
+                    <location>ул.Ломоносова, д.9, лит. А</location>
+                </element>
+            </subjects>
+        </element>
+        <element>
+            <day>Четверг</day>
+            <odd_week>True</odd_week>
+            <subjects>
+                <element>
+                    <number>1</number>
+                    <time>11:40-13:10</time>
+                    <room>ауд. 1410</room>
+                    <lesson>История российской науки и техники(прак)</lesson>
+                    <teacher>Белоусов Александр Сергеевич</teacher>
+                    <location>Кронверкский пр., д.49, лит.А</location>
+                </element>
+                <element>
+                    <number>2</number>
+                    <time>13:30-15:00</time>
+                    <room>ауд.Lemon Classroom(1419)</room>
+                    <lesson>История российской науки и техники(лек)</lesson>
+                    <teacher>Белоусов Александр Сергеевич</teacher>
+                    <location>Кронверкский пр., д.49, лит.А</location>
+                </element>
+            </subjects>
+        </element>
+    </schedule>
+</timetable_1_semester>
