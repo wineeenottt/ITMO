@@ -1,0 +1,211 @@
+ORG 0x000
+P1: WORD $MASSIVE_NUM1 ; 000
+P2: WORD $MASSIVE_NUM2
+MASSIVE_NUM1: WORD 0x0F, 0x0F, 0x0F ; 002 003 004
+MASSIVE_NUM2: WORD 0x0F, 0x0F, 0x0F ; 005 006 007
+RES: WORD 0x00,  0x00, 0x00, 0x00 ; 008 009 00a 00b
+T: WORD 0x00 ; 00c
+
+
+
+
+ADD_NUMBERS:  LD -(NUM1END)
+					ADD -(NUM2END)
+					ADD -(ADR_RES)
+					CMP #0x0A
+					BGE CONTIN_ADD ; если summa больше 10 - переходим
+					ST (ADR_RES) ; иначе меньше - сохраняем в результат
+					JUMP CHECK_ADD
+
+CONTIN_ADD: 	SUB #0x0A
+					ST (ADR_RES)
+					LD #0x01
+					ST -(ADR_RES) ; запись переноса
+					LD (ADR_RES)+
+CHECK_ADD: 		LD NUM1END
+					CMP #0x02
+					BEQ OUTPUT
+					JUMP ADD_NUMBERS		
+
+SUB_NUMBERS:	LD -(NUM1END)
+					SUB -(NUM2END)
+					BGE CHECK_SUB
+					LD -(NUM1END)
+					SUB #0x01
+					ST (NUM1END)+
+					LD (NUM1END)
+					ADD #0x0A
+					SUB (NUM1END)
+CHECK_SUB: 		ST -(ADR_RES)
+					LD ADR_RES 
+					CMP #0x09
+					BEQ OUTPUT
+					BGE SUB_NUMBERS
+					JUMP OUTPUT
+
+OUTPUT:  LD #000C         ; сброс счетчика R
+           ST $ADR_RES
+WRITELOOP: 
+		 LD -(ADR_RES)
+           ADD $T
+           OUT 0x14
+           LD $T
+           ADD #0x10
+           ST $T
+           LD $ADR_RES
+           CMP #0x08
+           BEQ SIGNWR
+           JUMP WRITELOOP
+SIGNWR:    LD $SIGN_RES       ; пишем знак R
+           BEQ ENDWR
+           LD #0xA
+           ADD $T
+           OUT 0x14
+           HLT
+ENDWR:     LD #0xF
+           ADD $T
+           OUT 0x14
+           HLT
+					
+										
+					
+					
+POINTER1: WORD $MASSIVE_NUM1 ; 000
+POINTER2: WORD $MASSIVE_NUM2				
+; подпрограмма для чтения
+READ: IN 0x1D
+      AND #0x40
+      BEQ READ
+      IN 0x1C
+      ST &1
+      RET
+
+SIGN_NUM1: WORD 0x00
+SIGN_NUM2: WORD 0x00
+SIGN_RES: WORD 0x00
+ADR_RES: WORD 0x0C
+j: JUMP ADD_NUMBERS
+s: JUMP SUB_NUMBERS
+
+START: CLA ; 
+		PUSH
+READ_NUM1: CALL READ ; читаем
+		   CMP #0x0A ; минус?
+		   BEQ SAVE_SIGN_NUM1 ; сохраняем знак первого числа
+		   CMP #0x0A ; это число?
+		   BLT SAVE_FNUM1 ; да - сохраняем 
+		   JUMP READ_NUM1 ; нет - вводите снова
+SAVE_SIGN_NUM1: LD #1 ; флаг отрицательности числа
+		   			   ST SIGN_NUM1 ; сохраняем
+		                  JUMP READ_NUM1 ; теперь нужна сама цифра/число
+SAVE_FNUM1: ST (POINTER1)+ ; сохраняем цифру 
+FURTHER_READ_NUM1: CALL READ  
+						     CMP #0x0A ; это минус?
+			  				BEQ SAVE_SIGNM_NUM2 ; да - знак воторого числа отриц
+			 	 			CMP #0x0B ; это плюс?
+			  				BEQ SAVE_SIGN_NUM2 ; да - знак второго числа полож
+			  				CMP #0x0A ; это цифра?
+      		  				BLT SAVE_NUM1 ; да - сохраняем
+      		  				JUMP FURTHER_READ_NUM1
+ SAVE_NUM1: ST (POINTER1)+  ; да - сохраняем 
+				LD POINTER1 ; загружаем значение счетчика 
+				CMP #0x05 ; вышел за рамки?
+				BEQ INPUT_SIGN ; да - вводите знак операции=знак второго числа
+				JUMP FURTHER_READ_NUM1 ; нет - можно ввести еще
+
+INPUT_SIGN: CALL READ 
+			    CMP #0x0A ; это минус?
+			    BEQ SAVE_SIGNM_NUM2 ; сохраняем как знак второго числа
+			    CMP #0x0B ; это плюс?
+			    BEQ SAVE_SIGN_NUM2 ; переходим к обработке
+			    JUMP INPUT_SIGN
+
+SAVE_SIGNM_NUM2: LD #1
+					ST SIGN_NUM2
+					JUMP READ_NUM2
+					
+NUM1END: WORD 0x05
+NUM2END: WORD 0x08
+NUM1BEGIN: WORD 0x02
+NUM2BEGIN: WORD 0x05
+
+SAVE_SIGN_NUM2: LD #0
+					ST SIGN_NUM2
+					
+READ_NUM2: CALL READ
+				CMP #0x0A ; это число?
+				BLT SAVE_NUM2 ; да - сохраняем
+				JUMP READ_NUM2 ; нет - вводите заново
+SAVE_NUM2: ST (POINTER2)+
+				LD POINTER2
+				CMP #0x08
+				BEQ INPUT_EQUAL
+FURTHER_READ_NUM2: CALL READ
+							CMP #0x0F
+							BEQ INPUT_EQUAL1
+							CMP #0x0A
+							BLT SAVE_NUM2
+							JUMP FURTHER_READ_NUM2
+				
+INPUT_EQUAL: CALL READ
+INPUT_EQUAL1: CMP #0x0F
+				BEQ TRANSFORM
+				JUMP INPUT_EQUAL		
+						
+TRANSFORM: CALL NORM1
+				CALL NORM2
+				LD SIGN_NUM1
+				CMP SIGN_NUM2
+				BEQ IFSAME
+				JUMP IFDIFFERENT
+
+
+			
+IFSAME:  LD SIGN_NUM1
+		   BEQ 	j ;ADD_NUMBERS 	; если знаки + => add
+		   LD #0x01
+		   ST SIGN_RES
+		   JUMP  j ;ADD_NUMBERS
+
+
+IFDIFFERENT: LD (NUM1BEGIN)+ ; ЗАГРУЖАЮ РАЗРЯДы  ЧИСЛА1
+				SUB (NUM1BEGIN)+ ; вычитаю РАЗРЯДы ЧИСЛА2
+				BEQ IFDIFFERENT ; равны загружаем след разряды
+				BLT NUM2_MORE
+				LD SIGN_NUM1
+				ST SIGN_RES
+				JUMP SUB_NUMBERS
+
+NUM2_MORE: LD SIGN_NUM2
+				 ST SIGN_RES
+				 LD #0x08
+				 ST NUM1END
+				 LD #0x05
+				 ST NUM2END
+				 JUMP  s ;SUB_NUMBERS
+				 			
+
+
+NORM1: LD 0x04
+		   CMP #0x0F
+		   BEQ NORMALZ1
+		   RET
+NORMALZ1:  	LD 0x03
+				ST 0x04
+				LD 0x02
+				ST 0x03
+				CLA
+				ST 0x02
+				JUMP NORM1
+				
+NORM2: LD 0x07
+		   CMP #0x0F
+		   BEQ NORMALZ2
+		   RET
+NORMALZ2:  	LD 0x06
+				ST 0x07
+				LD 0x05
+				ST 0x06
+				CLA
+				ST 0x05
+JUMP NORM2	

@@ -1,0 +1,159 @@
+	   ORG 0x000
+PLUS:      WORD 0xB
+MINUS:     WORD 0xA
+EQUAL:     WORD 0xF
+
+DigitNo:   WORD $N1
+RSUM:      WORD 0x10
+WriteADD:  WORD 0
+
+N1:        WORD 0xF, 0xF, 0xF
+N2:        WORD 0xF, 0xF, 0xF
+R:         WORD 0, 0, 0, 0
+IsN1MIN:   WORD 0
+IsN2MIN:   WORD 0
+IsRMIN:    WORD 0
+
+N1SUM:     WORD 0x9
+N2SUM:     WORD 0xC
+N1SUB:     WORD 0x6
+N2SUB:     WORD 0x9
+
+N1LOOP:    LD 0x8
+           CMP #0xF
+           BEQ N1LOP1
+           RET
+N1LOP1:    LD 7
+           ST 8
+           LD $N1
+           ST 7
+           CLA
+           ST $N1
+           JUMP N1LOOP
+
+N2LOOP:    LD 0xB
+           CMP #0xF
+           BEQ N2LOP1
+           RET
+N2LOP1:    LD 0xA
+           ST 0xB
+           LD $N2
+           ST 0xA
+           CLA
+           ST $N2
+           JUMP N2LOOP
+
+SUBLOOP:   NOP              
+           LD -(N1SUM)
+           SUB -(N2SUM)
+           BGE SUBSAVE
+           LD -(N1SUM)      
+           SUB #1
+           ST (N1SUM)+
+           LD (N1SUM)
+           ADD #0xA
+           SUB (N2SUM)
+SUBSAVE:   ST -(RSUM)
+           LD $RSUM
+           CMP #0xD
+           BEQ WRITE
+           BGE SUBLOOP
+           NOP
+           JUMP WRITE
+
+SUMLOOP:   LD -(N1SUM)
+           ADD -(N2SUM)
+           ADD -(RSUM)
+           CMP #0xA
+           BGE SUMIFA
+           ST (RSUM)
+           JUMP SUMCHECK
+SUMIFA:    SUB #0xA
+           ST (RSUM)
+           LD #0x1
+           ST -(RSUM)
+           LD (RSUM)+
+SUMCHECK:  LD $N1SUM        
+           CMP #0x6
+           BEQ WRITE
+           JUMP SUMLOOP
+
+READ:      IN 0x1D
+           AND #0x40
+           BEQ READ
+           IN 0x1C
+           ST &1
+           RET
+WRITE:     LD #0x10         
+           ST $RSUM
+WRITELOOP: LD -(RSUM)
+           ADD $WriteADD
+           OUT 0x14
+           LD $WriteADD
+           ADD #0x10
+           ST $WriteADD
+           LD $RSUM
+           CMP #0xC
+           BEQ SIGNWR
+           JUMP WRITELOOP
+SIGNWR:    LD $IsRMIN       
+           BEQ ENDWR
+           LD #0xA
+           ADD $WriteADD
+           OUT 0x14
+           HLT
+ENDWR:     LD #0xF
+           ADD $WriteADD
+           OUT 0x14
+           HLT
+
+START:     CLA
+           PUSH
+FirstREAD: CALL READ
+           CMP $MINUS
+           BEQ FirstMIN     
+           JUMP FirstNUM
+FirstMIN:  LD #1
+           ST $IsN1MIN
+           JUMP FirstREAD
+FirstNUM:  ST (DigitNo)+
+READLOOP:  NOP             
+           CALL READ
+           CMP $MINUS
+           BEQ IfMINUS      
+           CMP $PLUS
+           BEQ IfPLUS
+           CMP $EQUAL
+           BEQ IfEQUAL
+           ST (DigitNo)+
+           JUMP READLOOP
+IfMINUS:   LD #1
+           ST $IsN2MIN
+IfPLUS:    LD #0x9          
+           ST $DigitNo
+           JUMP READLOOP
+IfEQUAL:   CALL $N1LOOP     
+           CALL $N2LOOP
+           LD $IsN1MIN      
+           CMP $IsN2MIN
+           BEQ IfBOTH       
+           JUMP IfDIFF
+IfBOTH:    LD $IsN1MIN
+           BEQ IfBothPL     
+           LD #1
+           ST $IsRMIN
+IfBothPL:  JUMP $SUMLOOP
+IfDIFF:    LD (N1SUB)+      
+           SUB (N2SUB)+
+           BEQ IfDIFF       
+           BLT IfDIFFN2
+           LD $IsN1MIN      
+           ST $IsRMIN
+           JUMP $SUBLOOP
+IfDIFFN2:  LD $IsN2MIN      
+           ST $IsRMIN
+           LD #0xC
+           ST $N1SUM
+           LD #0x9
+           ST $N2SUM
+           JUMP $SUBLOOP
