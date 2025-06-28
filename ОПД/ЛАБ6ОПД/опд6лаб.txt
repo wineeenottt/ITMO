@@ -1,0 +1,78 @@
+ORG 0x000
+V0: WORD $DEFAULT, 0x180 ; инициализация векторов прерывания
+V1: WORD $INT1, 0x180 
+V2: WORD $INT2, 0x180
+V3: WORD $DEFAULT, 0x180
+V4: WORD $DEFAULT, 0x180
+V5: WORD $DEFAULT, 0x180
+V6: WORD $DEFAULT, 0x180
+V7: WORD $DEFAULT, 0x180
+DEFAULT: IRET ; просто возврат
+ 
+ORG 0x01B
+X: WORD 0x003 ; переменная x
+MAX: WORD 0x0029 ; макс значение - 41
+MIN: WORD 0xFFD4 ; мин значение - (-44)
+ 
+START: DI
+            CLA
+            OUT 0x1
+            OUT 0x7
+            OUT 0xB
+            OUT 0xE
+            OUT 0x12
+            OUT 0x16
+            OUT 0x1A
+            OUT 0x1E
+            LD #0x09 ; разрешить прерывание и вектор 1
+            OUT 0x3    ; (1000|0001 = 1001) в MR КВУ-1
+            LD #0x0A ; разрешить прерывание и вектор 2
+            OUT 0x5  ; (1000|0010 = 1010) в MR КВУ-2
+            
+PROG:  DI  ; основная программа
+            LD X ; загружаем х
+            ADD #0x02 ; прибавляем 2
+            CALL CHECK ; проверяем одз
+            ST X ; все ок - сохраняем
+            EI ; разрешаем прерывание 
+            JUMP PROG ; прыгаем обратно
+            
+CHECK: CMP MIN ; сравниваем с мин значением
+            BLT LOAD_MIN ; x > min, проверяем дальше
+            CMP MAX ; сравниваем с макс значением
+            BLT RETURN ; x > max, выход за пределы, иначе выходим из подпрог
+LOAD_MIN: LD MIN ; загрущка мин значения
+RETURN: RET ; выход из подпрограммы
+ 
+INT1: LD X ; обработка прерывания ВУ-1
+           NOP  ; для отладки
+           ASL  ; умножаем на 2
+           ADD X ; прибавляем х - поучается умножение на 3
+           NEG ; доп код для отриц числа
+           SUB #0x05 ; вичитаем 5
+           CALL CHECK ; проверяем по одз
+           OUT 0x02 ; выводим на ВУ-1
+           NOP ; для отладки
+           IRET ; возврат из обработки прерыания
+ 
+INT2: IN 4
+           ST A
+           HLT
+           LD X
+         NOT 
+         ST TEMP
+         LD A
+         AND TEMP
+         ST TEMP
+         LD A
+         NOT
+         AND X
+         ST A
+         LD TEMP
+         OR A
+                     HLT
+                     IRET     
+            A: WORD 0x00
+TEMP: WORD 0x00  
+
+	  
