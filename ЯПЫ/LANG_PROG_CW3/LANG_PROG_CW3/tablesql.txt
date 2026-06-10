@@ -1,0 +1,6 @@
+CREATE TABLE grade_records (
+    Id SERIAL PRIMARY KEY,
+    Student_name VARCHAR(100) NOT NULL,
+    Subject VARCHAR(100) NOT NULL,
+    Mark INT NOT NULL
+);

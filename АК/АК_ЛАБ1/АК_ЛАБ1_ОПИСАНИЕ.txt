@@ -1,0 +1,25 @@
+Кэш Side-Channel атаки и архитектурные методы защиты
+
+Доклад посвящён кэш-атакам — микроархитектурным атакам, использующим временные измерения для определения состояния кэша и извлечения секретных данных. Рассматриваются классические техники Flush+Reload и Prime+Probe. Показано, как атаки Spectre используют кэш как механизм утечки данных во время исполнения команд «на опережение». Анализируются аппаратные механизмы защиты и их влияние на производительность: технология разделения кэша CAT, барьеры спекуляции IBRS/STIBP/IBPB и программная техника retpoline.
+
+1. Методы кэш-атак: Flush+Reload, Prime+Probe
+2. Утечка данных при спекулятивном выполнении (Spectre)
+3. Средства защиты: CAT, IBRS, STIBP, IBPB
+
+
+Yarom Y., Falkner K. Flush+Reload: A High Resolution, Low Noise, L3 Cache Side-Channel Attack. USENIX Security 2014
+Liu F. et al. Last-Level Cache Side-Channel Attacks are Practical. IEEE S&P, 2015
+Intel. Speculative Execution Side Channel Mitigations. White Paper, 2018.
+Ge Q. et al. A Survey of Microarchitectural Timing Attacks and Countermeasures on Contemporary Hardware. Journal of Cryptographic Engineering, 2018.
+Kocher P. et al. Spectre Attacks: Exploiting Speculative Execution, 2018.
+Canella C. et al. A Systematic Evaluation of Transient Execution Attacks and Defenses, 2019.
+Turner P. Retpoline: A Branch Target Injection Mitigation, Google, 2018.
+Cache Allocation Technology (CAT) Documentation
+
+
+
+
+
+
+
+

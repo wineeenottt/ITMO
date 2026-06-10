@@ -1,0 +1,14 @@
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/bin/Debug/net9.0/LANG_PROG_CW4
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/bin/Debug/net9.0/LANG_PROG_CW4.deps.json
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/bin/Debug/net9.0/LANG_PROG_CW4.runtimeconfig.json
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/bin/Debug/net9.0/LANG_PROG_CW4.dll
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/bin/Debug/net9.0/LANG_PROG_CW4.pdb
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/LANG_PROG_CW4.GeneratedMSBuildEditorConfig.editorconfig
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/LANG_PROG_CW4.AssemblyInfoInputs.cache
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/LANG_PROG_CW4.AssemblyInfo.cs
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/LANG_PROG_CW4.csproj.CoreCompileInputs.cache
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/LANG_PROG_CW4.dll
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/refint/LANG_PROG_CW4.dll
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/LANG_PROG_CW4.pdb
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/LANG_PROG_CW4.genruntimeconfig.cache
+/Users/maria/RiderProjects/LANG_PROG_CW4/LANG_PROG_CW4/obj/Debug/net9.0/ref/LANG_PROG_CW4.dll

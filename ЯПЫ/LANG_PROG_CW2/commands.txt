@@ -1,0 +1,2 @@
+cc main.c ui.c collection.c domain.c -o LANG_PROG_CW2
+./LANG_PROG_CW2
