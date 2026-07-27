@@ -1,0 +1,15 @@
+cd ~/Documents/wildfly-38.0.0.B
+./bin/standalone.sh
+
+ssh -L 5432:localhost:5432  -p 2222 s466310@se.ifmo.ru
+
+jconsole -J-Djava.class.path=$JAVA_HOME/lib/tools.jar:/opt/wildfly/bin/client/jboss-client.jar
+
+
+
+
+
+
+
+
+
